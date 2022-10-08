@@ -107,11 +107,8 @@ addToCollection('Freudian', 'Daniel Caesar', 2017, [
         trackName: 'Transform',
         duration: 281
     },
-    {
-        trackName: '',
-        duration: 
-    }
-]);
+]
+);
 addToCollection('Songs in the Key of Life', 'Stevie Wonder', 1976, [
     {
         trackName: 'Love\'s in Need of Love Today',
@@ -356,14 +353,17 @@ addToCollection('Late Registration', 'Kanye West', 2005, [
         duration: 79
     }
 ]
-)
+);
 
 console.log(collection);
 
 function showCollection(array) {
     console.log(array.length);
     for (let album of array) {
-        console.log(`${album.title} by ${album.artist}, published in ${album.yearPublished}`)
+        console.log(`${album.title} by ${album.artist}, published in ${album.yearPublished}:`);
+        for (let track of album.tracks) {
+            console.log(`${album.tracks.indexOf(track)}. ${track.trackName}: ${track.duration}`)
+        }
     }
 }
 
@@ -382,7 +382,7 @@ function findByArtist(artist) {
 console.log(findByArtist('The Beatles'));
 console.log(findByArtist('Daniel Caesar'));
 
-//--------------- STRETCH -------------------
+// --------------- STRETCH ------------------- //
 
 
 // search function
@@ -421,10 +421,10 @@ const search1 = {
 //         const searchOutput = [];
 //         console.log(Object.keys(searchInput))
 //         for (let property in searchInput) {
-//             console.log(`----- search criterion: ${property}: ${searchInput[property]} -----`);
+//             console.log(`----- search criterion: ${ property }: ${ searchInput[property]} ----- `);
 //             for (let album of searchOutput) {
-//                 console.log(`checking ${property} against:`, album);
-//                 console.log(`album ${property}:`, album[property]);
+//                 console.log(`checking ${ property } against: `, album);
+//                 console.log(`album ${ property }: `, album[property]);
 //                 if (searchInput[property] !== album[property]) {
 //                     console.log('properties do not match');
 //                     searchOutput.splice(searchOutput.indexOf(album) + 1, 0);
@@ -455,7 +455,7 @@ function search(searchInput) {
             //each time the properties match exactly OR if there was no search input, count goes up by one
             if (albumValues[i] === searchInputValues[i] || !searchInputValues[i]) {
                 count++;
-                console.log(`matching properties:${count}`);
+                console.log(`matching properties: ${count}`);
             }
         }
         //if the number of matching properties equals the number of properties, push the album to output
