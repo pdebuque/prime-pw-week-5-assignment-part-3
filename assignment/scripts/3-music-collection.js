@@ -1,5 +1,12 @@
 console.log('***** Music Collection *****')
 
+$(document).ready(readyNow);
+
+function readyNow() {
+    console.log('jquery ready');
+    $('#makeSearchButton').on('click', searchFromDom);
+}
+
 const collection = [];
 
 function addToCollection(title, artist, yearPublished, tracks) {
@@ -360,9 +367,9 @@ console.log(collection);
 function showCollection(array) {
     console.log(array.length);
     for (let album of array) {
-        console.log(`${album.title} by ${album.artist}, published in ${album.yearPublished}:`);
+        console.log(`--- ${album.title} by ${album.artist}, published in ${album.yearPublished} ---`);
         for (let track of album.tracks) {
-            console.log(`${album.tracks.indexOf(track)}. ${track.trackName}: ${track.duration}`)
+            console.log(`${album.tracks.indexOf(track) + 1}. ${track.trackName}: ${track.duration}`)
         }
     }
 }
@@ -444,22 +451,33 @@ function search(searchInput) {
 
     //use values arrays for easier iteration
     const searchInputValues = Object.values(searchInput);
+    console.log(searchInputValues)
 
     //loop 1: compare search input with each album in the collection
     for (let album of collection) {
         //loop 2: compare each property in the search with each property in the collection album being considered
         const albumValues = Object.values(album);
         let count = 0;
-        for (let i = 0; i < albumValues.length; i++) {
+        for (let i = 0; i < albumValues.length - 1; i++) {
             console.log(album.title);
             //each time the properties match exactly OR if there was no search input, count goes up by one
             if (albumValues[i] === searchInputValues[i] || !searchInputValues[i]) {
                 count++;
                 console.log(`matching properties: ${count}`);
             }
+            // separate process to handle track names. Super clunky.
+            // extract an array of track names for the given album.
+            const albumTracksArray = []
+            for (track of albumValues[3]) {
+                albumTracksArray.push(track.trackName);
+            }
+            console.log(albumTracksArray)
+            if (albumTracksArray.some((element) => element = searchInputValues[3])) {
+                count++
+            }
         }
         //if the number of matching properties equals the number of properties, push the album to output
-        if (count === searchInputValues.length) {
+        if (count >= searchInputValues.length) {
             console.log('it\'s a match!');
             searchOutput.push(album)
         }
@@ -470,3 +488,60 @@ function search(searchInput) {
 // future refactoring: using a count and comparing its value feels clunky. how can i eliminate it?
 // bug check: does the search work with weird types?
 // better functionality: eliminate case sensitivity
+// better functionality: allow for results contain
+
+function searchFromDom() {
+    //if matching albums header doesn't exist, create it.
+
+    if (!$('#matchHeader').html()) {
+        $('.search').append(
+            `<div id="resultsContent">
+            <h3 id="matchHeader"> Matching Albums </h3>
+            <ul id='matchList'>
+            </ul>
+            </div>`
+        )
+    }
+
+    console.log('in searchFromDom')
+
+    // take inputs from all four search fields
+    // plug their values into a new object
+
+    const newSearch = {
+        title: $('#searchInputTitle').val(),
+        artist: $('#searchInputArtist').val(),
+        yearPublished: $('#searchInputYear').val(),
+        track: $('#searchInputTrack').val()
+    }
+
+    // execute search function (above)
+    const searchMatch = search(newSearch);
+    console.log(searchMatch);
+
+    //clear any existing results
+    $('#matchList').html('');
+
+    //append results to DOM
+    for (result of searchMatch) {
+        $('#matchList').append(`
+            <li> 
+                ${result.title}, by ${result.artist}. Published ${result.yearPublished}.
+            </li>
+        `)
+    }
+
+    // if there are no matches, say so
+
+    if (!$('#matchList').html()) {
+        $('#matchList').append(`
+            No results! Try again.
+        `)
+    }
+
+    // clear values
+    $('#searchInputTitle').val('');
+    $('#searchInputArtist').val('');
+    $('#searchInputYear').val('');
+    $('#searchInputTrack').val('');
+}
