@@ -5,6 +5,7 @@ $(document).ready(readyNow);
 function readyNow() {
     console.log('jquery ready');
     $('#makeSearchButton').on('click', searchFromDom);
+
 }
 
 const collection = [];
@@ -405,11 +406,7 @@ console.log(findByArtist('Daniel Caesar'));
 
 //return cloned collection object
 
-const search1 = {
-    title: '',
-    artist: '',
-    yearPublished: ''
-}
+
 
 // this first attempt was way too clunky
 
@@ -446,43 +443,129 @@ const search1 = {
 // }
 
 // attempting to make a generic search function that can scale with added properties
+// function search(searchInput) {
+//     const searchOutput = [];
+
+//     //use values arrays for easier iteration
+//     const searchInputValues = Object.values(searchInput);
+//     console.log(searchInputValues)
+
+//     //loop 1: compare search input with each album in the collection
+//     for (let album of collection) {
+//         //loop 2: compare each property in the search with each property in the collection album being considered
+//         const albumValues = Object.values(album);
+//         let count = 0;
+//         for (let i = 0; i < albumValues.length - 1; i++) {
+//             console.log(album.title);
+//             //each time the properties match exactly OR if there was no search input, count goes up by one
+//             if (albumValues[i] === searchInputValues[i] || !searchInputValues[i]) {
+//                 count++;
+//                 console.log(`matching properties: ${count}`);
+//             }
+//             // separate process to handle track names. Super clunky.
+//             // extract an array of track names for the given album.
+//             const albumTracksArray = []
+//             for (track of albumValues[3]) {
+//                 albumTracksArray.push(track.trackName);
+//             }
+//             console.log(albumTracksArray)
+//             if (albumTracksArray.some((element) => element = searchInputValues[3])) {
+//                 count++
+//             }
+//         }
+//         //if the number of matching properties equals the number of properties, push the album to output
+//         if (count >= searchInputValues.length) {
+//             console.log('it\'s a match!');
+//             searchOutput.push(album)
+//         }
+//     }
+//     return (searchOutput)
+// }
+
+const search1 = {
+    title: '',
+    artist: '',
+    yearPublished: '',
+    tracks: 'wait'
+}
+
 function search(searchInput) {
-    const searchOutput = [];
+    // use .includes and/or .filter to streamline
+    console.log(searchInput);
 
-    //use values arrays for easier iteration
-    const searchInputValues = Object.values(searchInput);
-    console.log(searchInputValues)
+    // try first with just title
+    // searchOutput should be all elements of collection whose title, artist, and year match, and whose tracks includes the track input
 
-    //loop 1: compare search input with each album in the collection
-    for (let album of collection) {
-        //loop 2: compare each property in the search with each property in the collection album being considered
-        const albumValues = Object.values(album);
-        let count = 0;
-        for (let i = 0; i < albumValues.length - 1; i++) {
-            console.log(album.title);
-            //each time the properties match exactly OR if there was no search input, count goes up by one
-            if (albumValues[i] === searchInputValues[i] || !searchInputValues[i]) {
-                count++;
-                console.log(`matching properties: ${count}`);
-            }
-            // separate process to handle track names. Super clunky.
-            // extract an array of track names for the given album.
-            const albumTracksArray = []
-            for (track of albumValues[3]) {
-                albumTracksArray.push(track.trackName);
-            }
-            console.log(albumTracksArray)
-            if (albumTracksArray.some((element) => element = searchInputValues[3])) {
-                count++
-            }
-        }
-        //if the number of matching properties equals the number of properties, push the album to output
-        if (count >= searchInputValues.length) {
-            console.log('it\'s a match!');
-            searchOutput.push(album)
-        }
-    }
-    return (searchOutput)
+    let searchOutput = collection.filter(album =>
+        album.title.toLowerCase() === searchInput.title.toLowerCase() || !searchInput.title);
+
+    searchOutput = searchOutput.filter(album =>
+        album.artist.toLowerCase() === searchInput.artist.toLowerCase() || !searchInput.artist);
+
+    searchOutput = searchOutput.filter(album =>
+        album.yearPublished === Number(searchInput.yearPublished) || !searchInput.yearPublished);
+
+    // special process for album tracks
+
+    searchOutput = searchOutput.filter((album) => {
+
+        // return only albums for whom there exists a track name that includes the searched track name
+        // take the album tracks array and map it such that if the track name includes the input, the mapped entry is 1, otherwise 0.
+
+
+        const albumMatchesMap = album.tracks.map((track) => {
+            return !searchInput.tracks || track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase()) ? 1 : 0;
+        })
+        // add up all elements of the array; if sum >0, the album passes the filter
+
+        return albumMatchesMap.reduce((a, b) => a + b, 0)
+
+        // for (let track of album.tracks) {
+        //     track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase())
+        // }
+
+    });
+
+    return searchOutput;
+}
+
+// add an option for search contains rather than search equals
+function searchContains(searchInput) {
+    console.log(searchInput);
+
+    // same as above, but with .includes rather than ===
+
+    let searchOutput = collection.filter(album =>
+        album.title.toLowerCase().includes(searchInput.title.toLowerCase()) || !searchInput.title);
+
+    searchOutput = searchOutput.filter(album =>
+        album.artist.toLowerCase().includes(searchInput.artist.toLowerCase()) || !searchInput.artist);
+
+    searchOutput = searchOutput.filter(album =>
+        album.yearPublished === Number(searchInput.yearPublished) || !searchInput.yearPublished);
+
+    // special process for album tracks
+
+    searchOutput = searchOutput.filter((album) => {
+
+        // return only albums for whom there exists a track name that includes the searched track name
+        // take the album tracks array and map it such that if the track name includes the input, the mapped entry is 1, otherwise 0.
+
+
+        const albumMatchesMap = album.tracks.map((track) => {
+            return !searchInput.tracks || track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase()) ? 1 : 0;
+        })
+        // add up all elements of the array; if sum >0, the album passes the filter
+
+        return albumMatchesMap.reduce((a, b) => a + b, 0)
+
+        // for (let track of album.tracks) {
+        //     track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase())
+        // }
+
+    });
+
+    return searchOutput;
 }
 
 // future refactoring: using a count and comparing its value feels clunky. how can i eliminate it?
@@ -516,8 +599,17 @@ function searchFromDom() {
     }
 
     // execute search function (above)
-    const searchMatch = search(newSearch);
-    console.log(searchMatch);
+    // edit: depending on status of checkbox!
+
+    let searchMatch = '';
+
+    if ($('#searchContains').is(':checked')) {
+        searchMatch = searchContains(newSearch);
+        console.log(searchMatch);
+    } else {
+        searchMatch = search(newSearch);
+        console.log(searchMatch);
+    }
 
     //clear any existing results
     $('#matchList').html('');
