@@ -5,7 +5,6 @@ $(document).ready(readyNow);
 function readyNow() {
     console.log('jquery ready');
     $('#makeSearchButton').on('click', searchFromDom);
-
 }
 
 const collection = [];
@@ -497,8 +496,7 @@ function search(searchInput) {
     // use .includes and/or .filter to streamline
     console.log(searchInput);
 
-    // try first with just title
-    // searchOutput should be all elements of collection whose title, artist, and year match, and whose tracks includes the track input
+    // searchOutput should be all elements of collection whose title, artist, and year match, and whose tracks matches one of the tracks in the album
 
     let searchOutput = collection.filter(album =>
         album.title.toLowerCase() === searchInput.title.toLowerCase() || !searchInput.title);
@@ -518,13 +516,7 @@ function search(searchInput) {
             return !searchInput.tracks || track.trackName.toLowerCase() === searchInput.tracks.toLowerCase() ? 1 : 0;
         })
         // add up all elements of the array; if sum >0, the album passes the filter
-
         return albumMatchesMap.reduce((a, b) => a + b, 0)
-
-        // for (let track of album.tracks) {
-        //     track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase())
-        // }
-
     });
 
     return searchOutput;
@@ -549,21 +541,12 @@ function searchContains(searchInput) {
 
     searchOutput = searchOutput.filter((album) => {
 
-        // return only albums for whom there exists a track name that includes the searched track name
-        // take the album tracks array and map it such that if the track name includes the input, the mapped entry is 1, otherwise 0.
-
-
         const albumMatchesMap = album.tracks.map((track) => {
             return !searchInput.tracks || track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase()) ? 1 : 0;
         })
         // add up all elements of the array; if sum >0, the album passes the filter
 
         return albumMatchesMap.reduce((a, b) => a + b, 0)
-
-        // for (let track of album.tracks) {
-        //     track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase())
-        // }
-
     });
 
     return searchOutput;
@@ -617,9 +600,6 @@ function searchFromDom() {
         `)
     }
 
-    // make the album expandable
-    $('.albumResult').on('click', expandAlbum);
-
     // if there are no matches, say so
 
     if (!$('#matchList').html()) {
@@ -635,8 +615,3 @@ function searchFromDom() {
     $('#searchInputTrack').val('');
 }
 
-function expandAlbum(e) {
-    console.log('in expandAlbum');
-    console.log(e);
-
-}
