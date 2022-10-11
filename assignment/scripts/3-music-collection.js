@@ -1,5 +1,7 @@
 console.log('***** Music Collection *****')
 
+// I got tired of manually creating test searches in the console.log and vscode, so I brought in jquery to make searches on the DOM
+
 $(document).ready(readyNow);
 
 function readyNow() {
@@ -19,6 +21,8 @@ function addToCollection(title, artist, yearPublished, tracks) {
     collection.push(newRecord);
     return newRecord
 }
+
+// not sure what the instruction "Console.log each album as added using the returned value." means
 
 addToCollection('Sgt. Pepper\'s Lonely Hearts Club Band', 'The Beatles', 1967, [
     //durations in seconds, not as a string 
@@ -387,11 +391,15 @@ function findByArtist(artist) {
             results.push(album)
         }
     }
+    if (results.length === 0) {
+        console.log('No results!')
+    }
     return results
 }
 
 console.log(findByArtist('The Beatles'));
 console.log(findByArtist('Daniel Caesar'));
+console.log(findByArtist('The Rolling Stones'))
 
 // --------------- STRETCH ------------------- //
 
@@ -522,6 +530,16 @@ function search(searchInput) {
     return searchOutput;
 }
 
+// test: expect rubber soul
+console.log(search(search1));
+
+const search2 = {
+    title: '',
+    artist: 'beat',
+    yearPublished: '',
+    tracks: ''
+}
+
 // add an option for search contains rather than search equals
 function searchContains(searchInput) {
     console.log(searchInput);
@@ -552,10 +570,14 @@ function searchContains(searchInput) {
     return searchOutput;
 }
 
-// future refactoring: using a count and comparing its value feels clunky. how can i eliminate it?
-// bug check: does the search work with weird types?
-// better functionality: eliminate case sensitivity
-// better functionality: allow for results contain
+// test: expect both beatles albums
+
+console.log(searchContains(search2));
+
+// future refactoring: using a count and comparing its value feels clunky. how can i eliminate it? fixed
+// bug check: does the search work with weird types? yes
+// better functionality: eliminate case sensitivity fixed
+// better functionality: allow for results contain yes
 
 function searchFromDom() {
     //if matching albums header doesn't exist, create it.
