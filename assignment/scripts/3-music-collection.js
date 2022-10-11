@@ -15,7 +15,7 @@ function addToCollection(title, artist, yearPublished, tracks) {
         title: title,
         artist: artist,
         yearPublished: yearPublished,
-        tracks: tracks // shouldn't this be an object of names and durations? no, then it wouldn't remember track order. using one array for both names and durations still feels very limited... ahhh an array of objects
+        tracks: tracks
     }
     collection.push(newRecord);
     return newRecord
@@ -115,6 +115,10 @@ addToCollection('Freudian', 'Daniel Caesar', 2017, [
         trackName: 'Transform',
         duration: 281
     },
+    {
+        trackName: 'Freudian',
+        duration: 602
+    }
 ]
 );
 addToCollection('Songs in the Key of Life', 'Stevie Wonder', 1976, [
@@ -506,15 +510,12 @@ function search(searchInput) {
         album.yearPublished === Number(searchInput.yearPublished) || !searchInput.yearPublished);
 
     // special process for album tracks
-
     searchOutput = searchOutput.filter((album) => {
-
         // return only albums for whom there exists a track name that includes the searched track name
         // take the album tracks array and map it such that if the track name includes the input, the mapped entry is 1, otherwise 0.
 
-
         const albumMatchesMap = album.tracks.map((track) => {
-            return !searchInput.tracks || track.trackName.toLowerCase().includes(searchInput.tracks.toLowerCase()) ? 1 : 0;
+            return !searchInput.tracks || track.trackName.toLowerCase() === searchInput.tracks.toLowerCase() ? 1 : 0;
         })
         // add up all elements of the array; if sum >0, the album passes the filter
 
@@ -595,33 +596,29 @@ function searchFromDom() {
         title: $('#searchInputTitle').val(),
         artist: $('#searchInputArtist').val(),
         yearPublished: $('#searchInputYear').val(),
-        track: $('#searchInputTrack').val()
+        tracks: $('#searchInputTrack').val()
     }
 
     // execute search function (above)
     // edit: depending on status of checkbox!
 
-    let searchMatch = '';
+    const searchMatch = $('#searchContains').is(':checked') ? searchContains(newSearch) : search(newSearch);
+    console.log(searchMatch);
 
-    if ($('#searchContains').is(':checked')) {
-        searchMatch = searchContains(newSearch);
-        console.log(searchMatch);
-    } else {
-        searchMatch = search(newSearch);
-        console.log(searchMatch);
-    }
-
-    //clear any existing results
+    //clear any existing results from the DOM
     $('#matchList').html('');
 
     //append results to DOM
     for (result of searchMatch) {
         $('#matchList').append(`
-            <li> 
+            <li class='albumResult'> 
                 ${result.title}, by ${result.artist}. Published ${result.yearPublished}.
             </li>
         `)
     }
+
+    // make the album expandable
+    $('.albumResult').on('click', expandAlbum);
 
     // if there are no matches, say so
 
@@ -636,4 +633,10 @@ function searchFromDom() {
     $('#searchInputArtist').val('');
     $('#searchInputYear').val('');
     $('#searchInputTrack').val('');
+}
+
+function expandAlbum(e) {
+    console.log('in expandAlbum');
+    console.log(e);
+
 }
