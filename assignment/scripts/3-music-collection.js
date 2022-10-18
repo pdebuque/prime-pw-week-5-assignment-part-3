@@ -387,7 +387,7 @@ showCollection(collection);
 function findByArtist(artist) {
     const results = [];
     for (let album of collection) {
-        if (album.artist === artist) {
+        if (album.artist.toLowerCase() === artist.toLowerCase()) {
             results.push(album)
         }
     }
@@ -397,9 +397,9 @@ function findByArtist(artist) {
     return results
 }
 
-console.log(findByArtist('The Beatles'));
-console.log(findByArtist('Daniel Caesar'));
-console.log(findByArtist('The Rolling Stones'))
+console.log('albums by The Beatles:', findByArtist('The beatles'));
+console.log('albums by Daniel Caesar:', findByArtist('DANIel Caesar'));
+console.log('albums by The Rolling Stones:', findByArtist('The Rolling Stones'))
 
 // --------------- STRETCH ------------------- //
 
@@ -531,7 +531,7 @@ function search(searchInput) {
 }
 
 // test: expect rubber soul
-console.log(search(search1));
+console.log('test: expect rubber soul', search(search1));
 
 const search2 = {
     title: '',
